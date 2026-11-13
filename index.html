@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A letter for you</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#ffe0ea; --bg2:#fff6c9; --bg3:#d9f2d0;
+  --ink:#5b3a4a; --soft:#8d6a7a; --paper:#fffdf6;
+  --env:#f9c3d3; --env-dark:#f2a9bf; --flap:#fbd3df;
+  --yes:#f78fb0; --yes-ink:#4a1d33; --no:#d9f2d0; --no-ink:#456444; --glow:rgba(247,143,176,.35);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg1:#2b1823; --bg2:#2e2a1c; --bg3:#1f2d22;
+    --ink:#fbe6ee; --soft:#d4aebd; --paper:#3a2530;
+    --env:#7a4659; --env-dark:#653a4a; --flap:#8a5266;
+    --yes:#f58fb2; --yes-ink:#2b1019; --no:#3d5a40; --no-ink:#dff3d8; --glow:rgba(245,143,178,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --bg1:#2b1823; --bg2:#2e2a1c; --bg3:#1f2d22;
+  --ink:#fbe6ee; --soft:#d4aebd; --paper:#3a2530;
+  --env:#7a4659; --env-dark:#653a4a; --flap:#8a5266;
+  --yes:#f58fb2; --yes-ink:#2b1019; --no:#3d5a40; --no-ink:#dff3d8; --glow:rgba(245,143,178,.3);
+}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;min-height:100dvh;overflow:hidden;-webkit-tap-highlight-color:transparent;display:grid;place-items:center;padding:20px;
+  font-family:'Quicksand',system-ui,sans-serif;font-weight:500;color:var(--ink);
+  background:radial-gradient(circle at 15% 10%,var(--bg1),transparent 55%),
+             radial-gradient(circle at 90% 20%,var(--bg2),transparent 50%),
+             radial-gradient(circle at 70% 95%,var(--bg3),transparent 55%),var(--bg1);
+}
+.float{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.float svg{position:absolute;bottom:-50px;opacity:.7;animation:rise linear infinite}
+@keyframes rise{to{transform:translateY(-118vh) rotate(30deg)}}
+.hidden{display:none!important}
+
+/* ENVELOPE */
+#stage{text-align:center;position:relative;z-index:2;transition:opacity .6s,transform .6s}
+#stage.gone{opacity:0;transform:translateY(40px) scale(.95)}
+.hint{font-family:'Pacifico',cursive;font-size:clamp(22px,6vw,30px);margin:0 0 26px}
+.sub{margin-top:26px;color:var(--soft);font-weight:700;font-size:15px}
+.env{
+  position:relative;width:min(320px,82vw);aspect-ratio:3/2;margin:0 auto;cursor:pointer;
+  perspective:900px;border:0;background:none;padding:0;display:block;
+  animation:sway 3s ease-in-out infinite;
+}
+.env.open{animation:none}
+@keyframes sway{50%{transform:rotate(-1.5deg) translateY(-4px)}}
+.env:focus-visible{outline:3px solid var(--ink);outline-offset:8px;border-radius:10px}
+.env .back{position:absolute;inset:0;background:var(--env-dark);border-radius:10px}
+.env .letter{position:absolute;left:7%;right:7%;top:6%;bottom:6%;background:var(--paper);border-radius:6px;z-index:1;transition:transform .8s .5s cubic-bezier(.3,1.2,.5,1);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.env .letter i{position:absolute;left:14%;right:14%;height:6px;border-radius:3px;background:var(--bg1)}
+.env .letter i:nth-child(1){top:22%}.env .letter i:nth-child(2){top:38%;right:34%}.env .letter i:nth-child(3){top:54%}
+.env.open .letter{transform:translateY(-46%)}
+.env .front{position:absolute;inset:0;z-index:2;background:var(--env);-webkit-clip-path:polygon(0 0,50% 56%,100% 0,100% 100%,0 100%);clip-path:polygon(0 0,50% 56%,100% 0,100% 100%,0 100%);border-radius:10px}
+.env .flap{position:absolute;left:0;right:0;top:0;height:56%;z-index:3;background:var(--flap);-webkit-clip-path:polygon(0 0,100% 0,50% 100%);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .6s,z-index 0s .3s}
+.env.open .flap{transform:rotateX(180deg);z-index:0;background:var(--env-dark)}
+.seal{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;z-index:4;transition:opacity .3s,transform .3s}
+.env.open .seal{opacity:0;transform:scale(.4)}
+
+/* LETTER CARD */
+.card{
+  position:relative;z-index:2;width:min(470px,100%);text-align:center;
+  background:var(--paper);border-radius:28px;padding:34px 26px 36px;
+  box-shadow:0 18px 50px var(--glow);animation:letterIn .8s cubic-bezier(.2,1,.3,1);
+}
+@keyframes letterIn{from{opacity:0;transform:translateY(60px) scale(.9)}to{opacity:1;transform:none}}
+.card .mini{width:44px;height:44px;margin:0 auto 6px;display:block;animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px) rotate(-5deg)}}
+h1{font-family:'Pacifico',cursive;font-weight:400;font-size:clamp(25px,6.4vw,34px);line-height:1.3;margin:10px 0 12px}
+p{margin:0 auto 22px;max-width:36ch;line-height:1.65;color:var(--soft);font-weight:700}
+.row{display:flex;gap:14px;justify-content:center;align-items:center;min-height:84px}
+button.b{font:inherit;font-weight:700;font-size:18px;border:0;border-radius:999px;cursor:pointer;padding:14px 32px}
+button.b:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+#yes{background:var(--yes);color:var(--yes-ink);box-shadow:0 8px 20px var(--glow);transform:scale(var(--s,1));transition:transform .3s cubic-bezier(.3,1.6,.5,1);z-index:3}
+#no{background:var(--no);color:var(--no-ink);transition:left .25s ease,top .25s ease}
+#no.free{position:fixed;z-index:5}
+.details{background:var(--bg2);border-radius:20px;padding:14px 18px;margin:0 auto 6px;max-width:320px;font-weight:700;line-height:1.9;text-align:left;display:grid;gap:2px}
+.details span{display:flex;gap:10px;align-items:center}
+.details svg{flex:none;width:18px;height:18px}
+.sig{font-family:'Pacifico',cursive;color:var(--yes);font-size:21px;margin-top:16px}
+.conf{position:fixed;top:-30px;z-index:9;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(112vh) rotate(540deg)}}
+@media (prefers-reduced-motion:reduce){.env,.card .mini,.float svg{animation:none}.env .letter,.env .flap{transition-duration:.01s;transition-delay:0s}}
+</style>
+</head>
+<body>
+<div class="float" id="float" aria-hidden="true"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="heart" viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.6 4.6 0 0 1 8-3 4.6 4.6 0 0 1 8 3c0 5.800-8 11-8 11z" fill="currentColor"/></symbol>
+  <symbol id="flower" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="12" cy="5" r="4"/><circle cx="19" cy="10" r="4"/><circle cx="16" cy="19" r="4"/><circle cx="8" cy="19" r="4"/><circle cx="5" cy="10" r="4"/></g><circle cx="12" cy="12" r="3.2" fill="#fff3a8"/></symbol>
+  <symbol id="star" viewBox="0 0 24 24"><path d="M12 2l2.7 6.600 7.100.6-5.400 4.600 1.700 7L12 17l-6.100 3.800 1.700-7L2.200 9.200l7.100-.6z" fill="currentColor"/></symbol>
+</svg>
+
+<main id="stage">
+  <p class="hint">A little something for you</p>
+  <button class="env" id="env" aria-label="Open the envelope">
+    <div class="back"></div>
+    <div class="letter"><i></i><i></i><i></i></div>
+    <div class="front"></div>
+    <div class="flap"></div>
+    <svg class="seal" style="color:#f0728f"><use href="#heart"/></svg>
+  </button>
+  <div class="sub">tap to open</div>
+</main>
+
+<main class="card hidden" id="ask">
+  <svg class="mini" style="color:#f78fb0"><use href="#heart"/></svg>
+  <h1 id="title">Pretty please come to lunch with me?</h1>
+  <p id="msg">It's your birthday, and Raghav and I are taking you out. You don't have to plan anything or bring anything. All you have to do is get dressed.</p>
+  <div class="row" id="row">
+    <button class="b" id="yes">Yes, I'll come</button>
+    <button class="b" id="no">No</button>
+  </div>
+</main>
+
+<main class="card hidden" id="done">
+  <svg class="mini" style="color:#f7c948"><use href="#star"/></svg>
+  <h1>It's a date</h1>
+  <p>Lunch with me and Raghav. Your only job is to get dressed.</p>
+  <div class="details">
+    <span><svg style="color:#f78fb0"><use href="#heart"/></svg><b id="d-date"></b></span>
+    <span><svg style="color:#8fd18a"><use href="#flower"/></svg><b id="d-place"></b></span>
+  </div>
+  <div class="sig">see you soon, love</div>
+</main>
+
+<script>
+/* Edit these before sending her the link */
+const DETAILS = {
+  date:  "Saturday",
+  place: "A surprise"
+};
+document.getElementById('d-date').textContent  = DETAILS.date;
+document.getElementById('d-place').textContent = DETAILS.place;
+
+const $ = id => document.getElementById(id);
+const COLORS = ['#f9a8c4','#ffe27a','#a8dca0','#cdb8f0','#ffc9a8','#9fdcd8'];
+const SHAPES = ['heart','flower','star'];
+const shape = (size, color, kind) =>
+  `<svg width="${size}" height="${size}" style="color:${color}"><use href="#${kind}"/></svg>`;
+
+/* floating background */
+for (let i = 0; i < 18; i++) {
+  const d = document.createElement('div');
+  d.innerHTML = shape(14 + Math.random()*22, COLORS[i % COLORS.length], SHAPES[i % 3]);
+  const s = d.firstChild;
+  s.style.left = (Math.random()*95) + '%';
+  s.style.animationDuration = (14 + Math.random()*14) + 's';
+  s.style.animationDelay = (-Math.random()*24) + 's';
+  $('float').appendChild(s);
+}
+
+/* open the envelope */
+let opened = false;
+$('env').addEventListener('click', () => {
+  if (opened) return;
+  opened = true;
+  $('env').classList.add('open');
+  document.querySelector('.sub').textContent = '';
+  setTimeout(() => $('stage').classList.add('gone'), 1700);
+  setTimeout(() => { $('stage').classList.add('hidden'); $('ask').classList.remove('hidden'); }, 2300);
+});
+
+/* the No button */
+const yes = $('yes'), no = $('no');
+const lines = [
+  ["Pleaseee?", "Just a tiny little yes for me?"],
+  ["Pretty please?", "Raghav said please too."],
+  ["Please please please", "we'll get wtv you wantt :)"],
+  ["Pleaseee :(", "you'll feel better, promise"],
+  ["One more please?", "I'll keep asking nicely, I promise."]
+];
+let tries = 0;
+
+function dodge(e){
+  if (e && e.cancelable) e.preventDefault();
+  if (!no.classList.contains('free')) {
+    const r = no.getBoundingClientRect();
+    no.style.left = r.left + 'px'; no.style.top = r.top + 'px';
+    no.classList.add('free');
+  }
+  const pad = 14, w = no.offsetWidth, h = no.offsetHeight;
+  const maxX = window.innerWidth - w - pad, maxY = window.innerHeight - h - pad;
+  const yr = yes.getBoundingClientRect();
+  let x, y, n = 0;
+  do {
+    x = pad + Math.random() * Math.max(0, maxX - pad);
+    y = pad + Math.random() * Math.max(0, maxY - pad);
+    n++;
+  } while (n < 30 && x < yr.right + 12 && x + w > yr.left - 12 && y < yr.bottom + 12 && y + h > yr.top - 12);
+  no.style.left = x + 'px'; no.style.top = y + 'px';
+
+  const l = lines[tries % lines.length];
+  $('title').textContent = l[0]; $('msg').textContent = l[1];
+  tries++;
+  yes.style.setProperty('--s', Math.min(1 + tries * 0.08, 1.5));
+}
+['mouseenter','pointerenter','focus'].forEach(ev => no.addEventListener(ev, dodge));
+no.addEventListener('touchstart', dodge, {passive:false});
+no.addEventListener('click', dodge);
+
+/* yes */
+yes.addEventListener('click', () => {
+  $('ask').classList.add('hidden');
+  no.classList.add('hidden');
+  $('done').classList.remove('hidden');
+  for (let i = 0; i < 60; i++) {
+    const c = document.createElement('div');
+    c.className = 'conf';
+    c.innerHTML = shape(12 + Math.random()*16, COLORS[i % COLORS.length], SHAPES[i % 3]);
+    c.style.left = (Math.random()*100) + 'vw';
+    c.style.animationDuration = (2.6 + Math.random()*3) + 's';
+    c.style.animationDelay = (Math.random()*1.2) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 7500);
+  }
+});
+</script>
+</body>
+</html>
